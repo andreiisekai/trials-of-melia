@@ -27,11 +27,11 @@ public class Fairy : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            print("Rotating left");
+            transform.Rotate(Vector3.forward);
         } 
         else if (Input.GetKey(KeyCode.D))
         {
-            print("Rotating right");
+            transform.Rotate(-Vector3.forward); 
         }
     }
 }
