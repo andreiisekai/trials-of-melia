@@ -135,10 +135,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 846825357, guid: fcc1cbfedd2d0084ea72de79454dd5e5, type: 3}
-      propertyPath: m_Mass
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 4829973134637190363, guid: fcc1cbfedd2d0084ea72de79454dd5e5, type: 3}
       propertyPath: m_Name
       value: Melia
