@@ -17,10 +17,10 @@ public class Fairy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput(); 
+        Thrust();
+        Rotate(); 
     }
-
-    void ProcessInput()
+    void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
@@ -29,19 +29,25 @@ public class Fairy : MonoBehaviour
             {
                 audioSource.Play();
             }
-        } 
+        }
         else
         {
             audioSource.Stop();
         }
+    }
+    void Rotate()
+    {
+        rigidBody.freezeRotation = true; // take manua control of rotation
 
         if (Input.GetKey(KeyCode.A))
         {
             transform.Rotate(Vector3.forward);
-        } 
+        }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward); 
+            transform.Rotate(-Vector3.forward);
         }
+
+        rigidBody.freezeRotation = false; // resume physics control of rotation
     }
 }
