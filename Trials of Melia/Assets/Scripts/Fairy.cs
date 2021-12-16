@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Fairy : MonoBehaviour
 {
+    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float mainThrust = 550f;
     Rigidbody rigidBody;
     AudioSource audioSource;
     // Start is called before the first frame update
@@ -20,11 +22,27 @@ public class Fairy : MonoBehaviour
         Thrust();
         Rotate(); 
     }
+    void OnCollisionEnter(Collision collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Friendly":
+                print("OK");
+                break;
+            case "Fuel":
+                print("Fuel");
+                break;
+            default:
+                print("Dead");
+                break;
+        }
+    }
     void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidBody.AddRelativeForce(Vector3.up);
+            float thrustThisFrame = mainThrust * Time.deltaTime;
+            rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame);
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();
@@ -37,15 +55,16 @@ public class Fairy : MonoBehaviour
     }
     void Rotate()
     {
-        rigidBody.freezeRotation = true; // take manua control of rotation
+        rigidBody.freezeRotation = true; // take manual control of rotation
+        float rotationThisFrame = rcsThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward);
+            transform.Rotate(Vector3.forward * rotationThisFrame);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
         }
 
         rigidBody.freezeRotation = false; // resume physics control of rotation
