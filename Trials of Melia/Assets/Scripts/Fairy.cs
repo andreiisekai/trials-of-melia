@@ -10,6 +10,9 @@ public class Fairy : MonoBehaviour
     [SerializeField] float mainThrust = 550f;
     Rigidbody rigidBody;
     AudioSource audioSource;
+    enum State { Alive, Dying, Transcending };
+    State state = State.Alive;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,25 +23,47 @@ public class Fairy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate(); 
+        // todo somewhere stop sound on death
+        if (state == State.Alive)
+        {
+            Thrust();
+            Rotate();
+        }
     }
     void OnCollisionEnter(Collision collision)
     {
+        if (state != State.Alive)
+        {
+            return;   // ignore collision when dead
+        }
+
         switch (collision.gameObject.tag)
         {
             case "Friendly":
+                // do nothing
                 break;
             case "Finish":
-                print("Hit Finish");
-                SceneManager.LoadScene(1);
+                state = State.Transcending;
+                Invoke("LoadNextLevel", 1f);
                 break;
             default:
                 print("Dead");
-                SceneManager.LoadScene(0);
+                state = State.Dying;
+                Invoke("LoadFirstLevel", 1f);
                 break;
         }
     }
+
+    void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1);      // todo allow for more than 2 levels
+    }
+
     void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
