@@ -8,6 +8,10 @@ public class Fairy : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 550f;
+    [SerializeField] AudioClip fairyFlying;
+    [SerializeField] AudioClip death;
+    [SerializeField] AudioClip success;
+
     Rigidbody rigidBody;
     AudioSource audioSource;
     enum State { Alive, Dying, Transcending };
@@ -26,8 +30,8 @@ public class Fairy : MonoBehaviour
         // todo somewhere stop sound on death
         if (state == State.Alive)
         {
-            Thrust();
-            Rotate();
+            RespondToThrustInput();
+            RespondToRotateInput();
         }
     }
     void OnCollisionEnter(Collision collision)
@@ -43,17 +47,31 @@ public class Fairy : MonoBehaviour
                 // do nothing
                 break;
             case "Finish":
-                state = State.Transcending;
-                Invoke("LoadNextLevel", 1f);
+                StartSuccessSequence();
                 break;
             default:
-                print("Dead");
-                state = State.Dying;
-                Invoke("LoadFirstLevel", 1f);
+                StartDeathSequence();
                 break;
         }
     }
+    void StartSuccessSequence()
+    {
+        state = State.Transcending;
+        playAudioUpon(success);
+        Invoke("LoadNextLevel", 1f);
+    }
+    void StartDeathSequence()
+    {
+        state = State.Dying;
+        playAudioUpon(death);
+        Invoke("LoadFirstLevel", 1f);
+    }
 
+    void playAudioUpon(AudioClip eventAudio)
+    {
+        audioSource.Stop();
+        audioSource.PlayOneShot(eventAudio);
+    }
     void LoadFirstLevel()
     {
         SceneManager.LoadScene(0);
@@ -64,23 +82,29 @@ public class Fairy : MonoBehaviour
         SceneManager.LoadScene(1);      // todo allow for more than 2 levels
     }
 
-    void Thrust()
+    void RespondToThrustInput()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            float thrustThisFrame = mainThrust * Time.deltaTime;
-            rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame);
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
+            ApplyThrust();
         }
         else
         {
             audioSource.Stop();
         }
     }
-    void Rotate()
+
+    void ApplyThrust()
+    {
+        float thrustThisFrame = mainThrust * Time.deltaTime;
+        rigidBody.AddRelativeForce(Vector3.up * thrustThisFrame);
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(fairyFlying);
+        }
+    }
+
+    void RespondToRotateInput()
     {
         rigidBody.freezeRotation = true; // take manual control of rotation
         float rotationThisFrame = rcsThrust * Time.deltaTime;
