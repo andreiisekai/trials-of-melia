@@ -8,9 +8,14 @@ public class Fairy : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 550f;
+
     [SerializeField] AudioClip fairyFlying;
     [SerializeField] AudioClip death;
     [SerializeField] AudioClip success;
+
+    [SerializeField] ParticleSystem fairyFlyingParticle;
+    [SerializeField] ParticleSystem deathParticles;
+    [SerializeField] ParticleSystem successParticles;
 
     Rigidbody rigidBody;
     AudioSource audioSource;
@@ -27,7 +32,6 @@ public class Fairy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // todo somewhere stop sound on death
         if (state == State.Alive)
         {
             RespondToThrustInput();
@@ -58,12 +62,14 @@ public class Fairy : MonoBehaviour
     {
         state = State.Transcending;
         playAudioUpon(success);
+        successParticles.Play();
         Invoke("LoadNextLevel", 1f);
     }
     void StartDeathSequence()
     {
         state = State.Dying;
         playAudioUpon(death);
+        deathParticles.Play();
         Invoke("LoadFirstLevel", 1f);
     }
 
@@ -91,6 +97,7 @@ public class Fairy : MonoBehaviour
         else
         {
             audioSource.Stop();
+            fairyFlyingParticle.Stop();
         }
     }
 
@@ -102,6 +109,7 @@ public class Fairy : MonoBehaviour
         {
             audioSource.PlayOneShot(fairyFlying);
         }
+        fairyFlyingParticle.Play();
     }
 
     void RespondToRotateInput()
