@@ -8,6 +8,7 @@ public class Fairy : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 550f;
+    [SerializeField] float levelLoadDelay = 2f;
 
     [SerializeField] AudioClip fairyFlying;
     [SerializeField] AudioClip death;
@@ -37,6 +38,11 @@ public class Fairy : MonoBehaviour
             RespondToThrustInput();
             RespondToRotateInput();
         }
+
+        if (Input.GetKey(KeyCode.Escape)) 
+        {
+            Application.Quit();
+        }
     }
     void OnCollisionEnter(Collision collision)
     {
@@ -63,14 +69,14 @@ public class Fairy : MonoBehaviour
         state = State.Transcending;
         playAudioUpon(success);
         successParticles.Play();
-        Invoke("LoadNextLevel", 1f);
+        Invoke("LoadNextLevel", levelLoadDelay);
     }
     void StartDeathSequence()
     {
         state = State.Dying;
         playAudioUpon(death);
         deathParticles.Play();
-        Invoke("LoadFirstLevel", 1f);
+        Invoke("LoadFirstLevel", levelLoadDelay);
     }
 
     void playAudioUpon(AudioClip eventAudio)
