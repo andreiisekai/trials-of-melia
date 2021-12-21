@@ -20,6 +20,7 @@ public class Fairy : MonoBehaviour
 
     Rigidbody rigidBody;
     AudioSource audioSource;
+    bool collisionsDisabled = false;
     enum State { Alive, Dying, Transcending };
     State state = State.Alive;
 
@@ -43,10 +44,29 @@ public class Fairy : MonoBehaviour
         {
             Application.Quit();
         }
+
+        if(Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
     }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionsDisabled = !collisionsDisabled;
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive)
+        if (state != State.Alive || collisionsDisabled)
         {
             return;   // ignore collision when dead
         }
