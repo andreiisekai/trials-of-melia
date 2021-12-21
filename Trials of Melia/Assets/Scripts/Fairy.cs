@@ -95,7 +95,7 @@ public class Fairy : MonoBehaviour
     {
         state = State.Dying;
         playAudioUpon(death);
-        deathParticles.Play();
+        deathParticles.Play();  // Unity version Bug ?? Why does fairyFlyingParticle.Play() plays here alongside deathParticles.Play() only when space is kept being pressed ??
         Invoke("LoadFirstLevel", levelLoadDelay);
     }
 
@@ -111,7 +111,13 @@ public class Fairy : MonoBehaviour
 
     void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);      // todo allow for more than 2 levels
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;  // loop back to first level
+        }
+        SceneManager.LoadScene(nextSceneIndex);      
     }
 
     void RespondToThrustInput()
@@ -122,9 +128,14 @@ public class Fairy : MonoBehaviour
         }
         else
         {
-            audioSource.Stop();
-            fairyFlyingParticle.Stop();
+            StopApplyingThrust();
         }
+    }
+
+    private void StopApplyingThrust()
+    {
+        audioSource.Stop();
+        fairyFlyingParticle.Stop();
     }
 
     void ApplyThrust()
@@ -135,23 +146,30 @@ public class Fairy : MonoBehaviour
         {
             audioSource.PlayOneShot(fairyFlying);
         }
-        fairyFlyingParticle.Play();
+        fairyFlyingParticle.Play();   // Unity version Bug ?? Why is this fairyFlyingParticle.Play() particle not starting to play when I press space ?
     }
 
     void RespondToRotateInput()
     {
-        rigidBody.freezeRotation = true; // take manual control of rotation
+        
         float rotationThisFrame = rcsThrust * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward * rotationThisFrame);
+            RotateManually(rotationThisFrame);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward * rotationThisFrame);
+            RotateManually(-rotationThisFrame);
         }
 
+        
+    }
+
+    private void RotateManually(float rotationThisFrame)
+    {
+        rigidBody.freezeRotation = true; // take manual control of rotation
+        transform.Rotate(Vector3.forward * rotationThisFrame);
         rigidBody.freezeRotation = false; // resume physics control of rotation
     }
 }
